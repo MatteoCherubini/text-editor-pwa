@@ -1,0 +1,7 @@
+{
+  "name": "Text Editor - PWA",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
