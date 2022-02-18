@@ -1,39 +1,51 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import MenuSplitDocument from '../views/MenuSplitDocument.vue'
 
-const routes: Array<RouteRecordRaw> = [
+const routes: Array<RouteRecordRaw> =[
   {
     path: '/',
-    redirect: '/tabs/tab1'
+    redirect: '/docs/tutorial'
   },
   {
-    path: '/tabs/',
-    component: TabsPage,
-    children: [
+    path: '/docs/',
+    component: MenuSplitDocument,
+    children: [//this should be the first page used as a tutorial**********************************************************************
       {
         path: '',
-        redirect: '/tabs/tab1'
+        redirect: '/docs/tutorial'
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
+        path: 'tutorial',
+        component: () => import('@/views/CurrentDocument.vue')
       },
-      {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
-      },
-      {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
-      }
     ]
-  }
-]
+  }];
+
+function createDocument (title: string) {
+   routes.push(
+    {
+      path: '/docs/',
+      component: MenuSplitDocument,
+      children: [
+        {
+          path: '',
+          redirect: '/docs/'+title
+        },
+        {
+          path: title,
+          component: () => import('@/views/CurrentDocument.vue')
+        },
+      ]
+    }
+  )  
+  return routes;
+}
+
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes: routes && createDocument("document1") &&  createDocument("document2")
 })
 
 export default router
