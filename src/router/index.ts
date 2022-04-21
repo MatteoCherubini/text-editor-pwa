@@ -1,51 +1,28 @@
-import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
-import MenuSplitDocument from '../views/MenuSplitDocument.vue'
+import { createRouter, createWebHistory, } from '@ionic/vue-router';
+import { RouteRecordRaw, } from 'vue-router';
 
-const routes: Array<RouteRecordRaw> =[
-  {
+const baseRoutes: Array<RouteRecordRaw> = [
+  /*{
     path: '/',
-    redirect: '/docs/tutorial'
+    redirect: '/login',
   },
   {
-    path: '/docs/',
-    component: MenuSplitDocument,
-    children: [//this should be the first page used as a tutorial**********************************************************************
-      {
-        path: '',
-        redirect: '/docs/tutorial'
-      },
-      {
-        path: 'tutorial',
-        component: () => import('@/views/CurrentDocument.vue')
-      },
-    ]
-  }];
-
-function createDocument (title: string) {
-   routes.push(
-    {
-      path: '/docs/',
-      component: MenuSplitDocument,
-      children: [
-        {
-          path: '',
-          redirect: '/docs/'+title
-        },
-        {
-          path: title,
-          component: () => import('@/views/CurrentDocument.vue')
-        },
-      ]
-    }
-  )  
-  return routes;
-}
-
+    path: "/login",
+    component: () => import('@/components/LoginFirebasePage.vue'),
+  },
+  {
+    path: "/workspace",
+    component: () => import('@/views/MenuSplitDocument.vue'),
+  },*/
+  {
+    path: "/workspace",
+    component: () => import('@/views/MenuSplitDocument.vue'),
+  }
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes: routes && createDocument("document1") &&  createDocument("document2")
+  routes: baseRoutes,
 })
 
-export default router
+export default router;

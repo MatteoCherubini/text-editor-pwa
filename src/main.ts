@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router';
+
+//Official global store for VueJs:
+import { createPinia } from 'pinia';
 
 import { IonicVue } from '@ionic/vue';
 
@@ -23,10 +25,41 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* PWA library */
+import router from './router';
+
+import { firebaseApp } from './firebase';
+import firebase from 'firebase/compat/app';
+
+
+import { getAuth } from 'firebase/auth';
+import 'firebaseui';
+import 'firebaseui/dist/firebaseui.css';
+import * as firebaseui from 'firebaseui';
+
 const app = createApp(App)
   .use(IonicVue)
+  .use(createPinia())
   .use(router);
-  
+
 router.isReady().then(() => {
-  app.mount('#app');
+
+  const auth = getAuth(firebaseApp);
+  auth.onAuthStateChanged(user => {
+    const ui = new firebaseui.auth.AuthUI(getAuth(firebaseApp));
+    if (user) {
+      console.log("user already logged");
+      app.mount('#app');
+      console.log("App mounted correctly");
+    }
+    else {
+      console.log("user not logged");
+      ui.start("#app", {
+        signInSuccessUrl: '/workspace',
+        signInOptions: [
+          firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        ],
+      });
+    }
+  })
 });

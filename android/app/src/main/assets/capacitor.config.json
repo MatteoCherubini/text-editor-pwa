@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Text Editor - PWA",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

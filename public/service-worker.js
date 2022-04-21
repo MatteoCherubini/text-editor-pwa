@@ -1,6 +1,7 @@
 const CACHE_NAME = 'public-cache';
-const urlsToCache = [
+/*const urlsToCache = [
 	'/',
+	//icons: maybe every device should cache what it needs
 	'icons/icon-72x72.png',
 	'icons/icon-96x96.png',
 	'icons/icon-128x128.png',
@@ -48,10 +49,33 @@ const urlsToCache = [
 	'favicons/ms-tile-310x150.png',
 	'favicons/ms-tile-310x310.png',
 	'favicons/favicon.ico'
+
+
+	'/js/chunk-vendors.js',
+	'/js/src_views_MenuSplitDocument_vue.js',
+	'/js/app.js',
+	'/js/node_modules_ionic_core_components_tap-click_js.js',
+	'/js/node_modules_ionic_core_components_swipe-back_js.js',
+	'/service-worker.js'
+	
+	
+	'/assets/icon/favicon.png',
+	'/icons/icon-144x144.png',
+	'/js/app.js',
+	'/js/node_modules_ionic_core_components_swipe-back_js.js',
+	'/js/node_modules_ionic_core_components_tap-click_js.js',
+	'/js/src_views_MenuSplitDocument_vue.js',
+	'/manifest.json',
+];*/
+
+const urlsToCache = [
+	'/',	
 ];
 
 self.addEventListener('install', event => {
 	self.skipWaiting();
+
+	console.log('Service worker install event!');
 
 	event.waitUntil(
 		caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
@@ -91,11 +115,14 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('activate', event => {
+
+	console.log('Service worker activate event!');
+
 	event.waitUntil(
 		caches
 			.keys()
 			.then(cacheNames =>
-				Promise.all(
+				Promise.all( //The Promise object represents the eventual completion of an asynchronous operation.
 					cacheNames
 						.filter(cacheName => cacheName !== CACHE_NAME)
 						.map(cacheName => caches.delete(cacheName))
