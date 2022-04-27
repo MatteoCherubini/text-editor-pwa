@@ -11,7 +11,9 @@
       <ion-content>
         <ion-list class="PwaDocList">
           <ion-menu-toggle autoHide="false" v-for="doc in documents" :key="doc">
-            <p @click="generateDocFromLink(doc)">{{ doc }}</p>
+            <p @click="generateDocFromLink(doc[0], doc[1])">
+              {{ doc[0] }}
+            </p>
           </ion-menu-toggle>
         </ion-list>
       </ion-content>
@@ -89,11 +91,9 @@ export default {
   },
 
   methods: {
-    generateDocFromLink(title: string) {
-      localStore().assignCurrentDB(
-        ref(getDatabase(firebaseApp), "-N06mE4gjP1Axdj4kM9A")
-      );
-      const doc = new menuCloudDocStrategy(title, []);
+    generateDocFromLink(title: string, id: string) {
+      localStore().assignCurrentDB(ref(getDatabase(firebaseApp), id));
+      const doc = new menuCloudDocStrategy(title, []).CloudID(id);
       localStore().assignCurrentDoc(doc);
       doc.mountDocument();
     },

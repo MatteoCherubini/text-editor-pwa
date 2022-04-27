@@ -2,7 +2,7 @@
   <ion-page v-if="checkDocIsActive()">
     <ion-header>
       <ion-toolbar>
-        <ion-title id = "PWAdocTitle" slot="start"> {{ title }} </ion-title>
+        <ion-title id="PWAdocTitle" slot="start"> {{ title }} </ion-title>
         <ion-button slot="end" @click="save()">
           <ion-icon :icon="saveOutline"></ion-icon>
         </ion-button>
@@ -58,22 +58,20 @@ export default {
       localStore().appendChapter();
       const matrix = localStore().getChapterMatrix();
       console.log("accessing DataBase...");
-      if(matrix!=[]){
-        console.log("in current document la matrice è piena!!")
+      if (matrix != []) {
         update(localStore().getCurrentDBRef(), { content: matrix });
         localStore().clearChapterMatrixOnceSaved();
       }
     },
 
-    checkDocIsActive(){
+    checkDocIsActive() {
       return localStore().isDocActive();
     },
   },
 
-setup() {
+  setup() {
     const idContainer = "#chapter-container";
-    const title = "currentDoc da sistemare";//magari con la referenza al db... tanto prima cloud!!
-    //localStore().getCurrentDoc().getDocTitle();
+    const title = "currentDoc da sistemare"; //localStore().getCurrentDoc().getDocTitle();
 
     return {
       ellipsisVertical,

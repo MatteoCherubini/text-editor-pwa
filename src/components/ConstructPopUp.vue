@@ -30,10 +30,12 @@
 
 <script lang="ts">
 import { IonAlert, IonButton, IonItem, IonInput } from "@ionic/vue";
-import { ref } from "vue";
+import { ref as vueRef } from "vue";
 
 import { menuNewDocStrategy } from "@/components/textEditorLibrary";
 import { localStore } from "@/stores/PwaBasicStore";
+import { getDatabase, push, ref } from "firebase/database";
+import { firebaseApp } from "@/firebase";
 
 export default {
   name: "PwaInputPopup",
@@ -42,8 +44,20 @@ export default {
 
   methods: {
     createDocument(newTitle: string) {
-      console.log("new document " + newTitle + " will added:");
-      const doc = new menuNewDocStrategy(newTitle, localStore().childs, null!);
+      console.log("new document " + newTitle + " will be added:");
+
+      localStore().assignCurrentDB(
+        push(ref(getDatabase(firebaseApp), "/"), {
+          title: newTitle,
+          content: [[""]],
+        })
+      );
+
+      const doc = new menuNewDocStrategy(
+        newTitle,
+        localStore().childs,
+        localStore().getCurrentDBRef()
+      );
       localStore().assignCurrentDoc(doc);
       localStore().addChild(newTitle, doc.getCloudID());
       doc.mountDocument();
@@ -51,7 +65,7 @@ export default {
   },
 
   setup() {
-    const isOpenRef = ref(false);
+    const isOpenRef = vueRef(false);
     const setOpen = (state: boolean) => (isOpenRef.value = state);
     var newDocTitle;
     return { isOpenRef, setOpen, newDocTitle };

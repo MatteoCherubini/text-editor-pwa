@@ -53,10 +53,6 @@ export const localStore = defineStore('pwaLocalStore', {
       this.databaseNames.push(name);
     },
 
-    /*assignChild(routes: string[]) {
-      this.childs = routes;
-    },*/
-
     assignCurrentDoc(doc: TextEditorSubject) {
       currentDocument = doc;
     },
@@ -83,7 +79,6 @@ export const localStore = defineStore('pwaLocalStore', {
 
     assignDocActive(flag: boolean) {
       this.docActive = flag;
-      console.log(this.docActive);
     },
 
     getCurrentDBRef() {
@@ -92,15 +87,10 @@ export const localStore = defineStore('pwaLocalStore', {
 
     appendChapter() {
       if (documentChapterTextMatrix != null) {
-        console.log("matrice aumentata");
         documentChapterTextMatrix.push([this.currentChapterText[0], this.currentChapterText[1]]);
       }
       else if (this.currentChapterText[0] != "" && this.currentChapterText[1] != "") {
-        console.log("matrice nuova");
         documentChapterTextMatrix = [[this.currentChapterText[0], this.currentChapterText[1]]];
-      }
-      else {
-        console.log("matrice vuota");
       }
     },
 
@@ -113,7 +103,6 @@ export const localStore = defineStore('pwaLocalStore', {
     },
 
     clearChapterMatrixOnceSaved() {
-      console.log("reset matrice");
       documentChapterTextMatrix = [];
       this.currentChapterText = ["", ""];
     }

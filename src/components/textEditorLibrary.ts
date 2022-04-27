@@ -1,12 +1,11 @@
 //Imports
 import { createApp } from 'vue';
-import PwaChapterArea from '@/components/TextEditorComponent.vue';
 //import { Filesystem, Directory, Encoding, } from '@capacitor/filesystem';
-import { firebaseApp } from '@/firebase';
-import { push, getDatabase, ref, get, Database, DatabaseReference, } from 'firebase/database';
+import { get, DatabaseReference, } from 'firebase/database';
 import { localStore } from '@/stores/PwaBasicStore';
 import { createPinia } from 'pinia';
 
+import PwaChapterArea from '@/components/TextEditorComponent.vue';
 import PwaDocument from "@/components/CurrentDocument.vue";
 
 //start abstract object definitions:
@@ -47,7 +46,7 @@ export abstract class TextEditorSubject {
 }
 
 export interface makeDocStrategy {
-  makeDocument(title: string): void;
+  makeDocument(): void;
 }
 
 abstract class Document extends TextEditorSubject {
@@ -68,7 +67,7 @@ abstract class Document extends TextEditorSubject {
     return this.cloudID;
   }
 
-  protected CloudID(ID: string){
+  public CloudID(ID: string) {
     this.cloudID = ID;
     return this;
   }
@@ -102,39 +101,16 @@ abstract class Document extends TextEditorSubject {
 //start concrete object definitions:
 export class menuNewDocStrategy extends Document implements makeDocStrategy {
 
-  private firebaseDB;// = getDatabase(firebaseApp);//********************************/
+  private firebaseDB;
 
   constructor(title: string, dbChild: string[][], databaseRef: DatabaseReference) {
     super(title, dbChild);
-    if (databaseRef != null) {
-      //this.firebaseDB = databaseRef;
-      console.log("databaseRef.key == " + databaseRef.key!)
-      this.CloudID(databaseRef.key!)
-      this.continueOldDoc();
-    }
-    else {
-      this.firebaseDB = getDatabase(firebaseApp);
-      this.makeDocument(title);
-    }
-
+    this.firebaseDB = databaseRef;
+    this.makeDocument();
   }
 
-  makeDocument(title: string): void {
-    //this.addNewDocument();
-    console.log("New Document created");
-
-    localStore().assignCurrentDB(push(
-      ref(this.firebaseDB!, "/"), { title: title, content: [[""]] })
-    );
-  }
-
-  private continueOldDoc() {
-    //this.addNewDocument();///////////////////////////////////?
-    console.log("Old Document opened");
-
-    /*localStore().assignCurrentDB(push(
-      ref(this.firebaseDB, "/"), { title: title, content: [[""]] })
-    );*/
+  makeDocument(): void {
+    this.CloudID(this.firebaseDB.key!);
   }
 }
 
@@ -142,21 +118,20 @@ export class menuCloudDocStrategy extends Document implements makeDocStrategy {
 
   constructor(title: string, dbChild: string[][]) {
     super(title, dbChild);
-    this.makeDocument(title);
+    this.makeDocument();
   }
 
-  makeDocument(title: string): void {
+  makeDocument(): void {
     console.log("Loading Document...");
 
     get(localStore().getCurrentDBRef()).then((snapshot) => {
-      console.log(snapshot.val());
       (<HTMLInputElement>document.getElementById('PWAdocTitle')!).textContent = snapshot.child("title").val();
 
       const array = snapshot.child("content").val();
 
       for (let i = 0; i < array.length; i++) {
         localStore().assignChapterMatrix(snapshot.child("content/" + i + "/0").val(), snapshot.child("content/" + i + "/1").val());
-        new CloudChapter(snapshot.child("title").val(), "#chapter-container");
+        new Chapter(snapshot.child("title").val(), "#chapter-container");
       }
 
       localStore().clearChapterMatrixOnceSaved();
@@ -189,34 +164,10 @@ class Chapter extends TextEditorComponent {
   }
 }
 
-class CloudChapter extends TextEditorComponent {
-
-
-  constructor(title: string, idContainer: string) {
-    super(title);
-    this.addToDOM(idContainer);
-  }
-  protected addToDOM(idContainer: string): void {
-
-    const container = document.querySelector(idContainer);
-
-    const mountNode = document.createElement("div");
-    mountNode.id = "mount-node";
-
-    container?.appendChild(mountNode);
-
-    console.log("added a chapter");
-
-    console.log(createApp(PwaChapterArea).use(createPinia()).mount("#mount-node"));
-
-    mountNode.removeAttribute("id");
-  }
-}
-
 
 //start JavaScript functions
 
-function makeHTML(title: string, matrix: string[][]) {
+/*function makeHTML(title: string, matrix: string[][]) {
   // generates an HTML file with page contents and saves it into the database
 
   let htmlContent = "";
@@ -228,17 +179,16 @@ function makeHTML(title: string, matrix: string[][]) {
     "<html> <h1 style='text-align:center;'>"
     + title + "</h1> " + htmlContent + "</html>";
 
-  /*console.log("accesso al DataBase: " + this.firebaseRef);
-  push(this.firebaseRef, { title: title, content: htmlContent });*/
+  //push(this.firebaseRef, { title: title, content: htmlContent });
 
 
-  /*
+  
       await Filesystem.writeFile({
         path: "" + title + ".html",
         data: htmlContent,
         directory: Directory.Documents,//for android
         encoding: Encoding.UTF8,
       });
-  */
-}
+  
+}*/
 
