@@ -1,12 +1,13 @@
 //Imports
 import { createApp } from 'vue';
 //import { Filesystem, Directory, Encoding, } from '@capacitor/filesystem';
-import { get, DatabaseReference, } from 'firebase/database';
-import { localStore } from '@/stores/PwaBasicStore';
-import { createPinia } from 'pinia';
+import { ref, get, DatabaseReference, push, getDatabase, } from 'firebase/database';
+import { localStore, temporaryCloudStore } from '@/stores/PwaBasicStore';
+//import { createPinia } from 'pinia';
 
 import PwaChapterArea from '@/components/TextEditorComponent.vue';
 import PwaDocument from "@/components/CurrentDocument.vue";
+import { firebaseApp } from '@/firebase';
 
 //start abstract object definitions:
 export abstract class TextEditorComponent {
@@ -74,6 +75,12 @@ abstract class Document extends TextEditorSubject {
 
   public makeChapter(title: string, idContainer: string) {
     console.log("building new chapter...");
+    temporaryCloudStore().setChapCloudRef(
+      push(ref(getDatabase(firebaseApp), "/" + localStore().getCurrentDBRef().key + "/content"), {
+        title: "",
+        content: "",
+      })
+    );
     const chap = new Chapter(title, idContainer);
     return chap;
   }
@@ -87,7 +94,7 @@ abstract class Document extends TextEditorSubject {
       div.setAttribute("id", "main-content");
       document.querySelector('#main-content')?.replaceWith(div);
       localStore().assignDocActive(true);
-      createApp(PwaDocument).use(createPinia()).mount("#main-content");
+      createApp(PwaDocument).mount("#main-content");//.use(createPinia())
     }
 
     else {
@@ -126,15 +133,14 @@ export class menuCloudDocStrategy extends Document implements makeDocStrategy {
 
     get(localStore().getCurrentDBRef()).then((snapshot) => {
       (<HTMLInputElement>document.getElementById('PWAdocTitle')!).textContent = snapshot.child("title").val();
+      snapshot.child("content").forEach(function (childSnapshot) {
 
-      const array = snapshot.child("content").val();
+        temporaryCloudStore().setChapCloudTitle(childSnapshot.child("title").val());
+        temporaryCloudStore().setChapCloudContent(childSnapshot.child("content").val());
+        temporaryCloudStore().setChapCloudRef(childSnapshot.ref);
 
-      for (let i = 0; i < array.length; i++) {
-        localStore().assignChapterMatrix(snapshot.child("content/" + i + "/0").val(), snapshot.child("content/" + i + "/1").val());
-        new Chapter(snapshot.child("title").val(), "#chapter-container");
-      }
-
-      localStore().clearChapterMatrixOnceSaved();
+        new Chapter(childSnapshot.child("title").val(), "#chapter-container");
+      });
       localStore().assignCurrentDoc(new menuNewDocStrategy(this.docTitle, this.dbChildList, localStore().getCurrentDBRef()));
     })
   }
@@ -157,9 +163,7 @@ class Chapter extends TextEditorComponent {
     container?.appendChild(mountNode);
 
     console.log("added a chapter");
-
-    createApp(PwaChapterArea).use(createPinia()).mount("#mount-node");
-
+    createApp(PwaChapterArea).mount("#mount-node");//.use(createPinia())/////////////////////////////
     mountNode.removeAttribute("id");
   }
 }

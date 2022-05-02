@@ -29,14 +29,45 @@ export const globalRoute = defineStore('pwaRouteStore', {
   },
 })
 
+let currentChapDBRef: DatabaseReference;
+
+export const temporaryCloudStore = defineStore('pwaCloudStore', {
+
+  state: () => ({
+    content: "",
+    title: "",
+  }),
+
+  actions: {
+    setChapCloudContent(chapContent: string) {
+      this.content = chapContent;
+    },
+    getChapCloudContent() {
+      return this.content;
+    },
+    setChapCloudTitle(chapTitle: string) {
+      this.title = chapTitle;
+    },
+    getChapCloudTitle() {
+      return this.title;
+    },
+    setChapCloudRef(ID: DatabaseReference) {
+      currentChapDBRef = ID;
+    },
+    getChapCloudRef() {
+      return currentChapDBRef;
+    },
+  },
+})
+
 let currentDocument: TextEditorSubject;
 let currentDataBaseRef: DatabaseReference;
-let documentChapterTextMatrix: string[][];
 let vueDocSpaceApp: App<Element>;
 
 export const localStore = defineStore('pwaLocalStore', {
 
   state: () => ({
+    title: "",
     childs: [[""]],
     databaseNames: [""],
     currentChapterText: [""],
@@ -44,6 +75,14 @@ export const localStore = defineStore('pwaLocalStore', {
   }),
 
   actions: {
+
+    assignTitle(docTitle: string) {
+      this.title = docTitle;
+    },
+
+    getTitle() {
+      return this.title;
+    },
 
     addChild(title: string, databaseID: string) {
       this.childs.push([title, databaseID]);
@@ -55,10 +94,6 @@ export const localStore = defineStore('pwaLocalStore', {
 
     assignCurrentDoc(doc: TextEditorSubject) {
       currentDocument = doc;
-    },
-
-    assignCurrentDB(database: DatabaseReference) {
-      currentDataBaseRef = database;
     },
 
     getCurrentDoc() {
@@ -81,31 +116,11 @@ export const localStore = defineStore('pwaLocalStore', {
       this.docActive = flag;
     },
 
+    assignCurrentDB(database: DatabaseReference) {
+      currentDataBaseRef = database;
+    },
     getCurrentDBRef() {
       return currentDataBaseRef;
     },
-
-    appendChapter() {
-      if (documentChapterTextMatrix != null) {
-        documentChapterTextMatrix.push([this.currentChapterText[0], this.currentChapterText[1]]);
-      }
-      else if (this.currentChapterText[0] != "" && this.currentChapterText[1] != "") {
-        documentChapterTextMatrix = [[this.currentChapterText[0], this.currentChapterText[1]]];
-      }
-    },
-
-    getChapterMatrix() {
-      return documentChapterTextMatrix;
-    },
-
-    assignChapterMatrix(title: string, content: string) {
-      documentChapterTextMatrix = [[title], [content]];
-    },
-
-    clearChapterMatrixOnceSaved() {
-      documentChapterTextMatrix = [];
-      this.currentChapterText = ["", ""];
-    }
-
   },
 })

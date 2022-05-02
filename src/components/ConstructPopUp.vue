@@ -46,10 +46,11 @@ export default {
     createDocument(newTitle: string) {
       console.log("new document " + newTitle + " will be added:");
 
+      localStore().assignTitle(newTitle);
+
       localStore().assignCurrentDB(
         push(ref(getDatabase(firebaseApp), "/"), {
           title: newTitle,
-          content: [[""]],
         })
       );
 
@@ -58,6 +59,7 @@ export default {
         localStore().childs,
         localStore().getCurrentDBRef()
       );
+
       localStore().assignCurrentDoc(doc);
       localStore().addChild(newTitle, doc.getCloudID());
       doc.mountDocument();

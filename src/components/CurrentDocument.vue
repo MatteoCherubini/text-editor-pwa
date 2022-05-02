@@ -3,9 +3,6 @@
     <ion-header>
       <ion-toolbar>
         <ion-title id="PWAdocTitle" slot="start"> {{ title }} </ion-title>
-        <ion-button slot="end" @click="save()">
-          <ion-icon :icon="saveOutline"></ion-icon>
-        </ion-button>
       </ion-toolbar>
     </ion-header>
 
@@ -15,8 +12,7 @@
       expand="block"
       color="medium"
       @click="
-        localStore().appendChapter();
-        localStore().getCurrentDoc().makeChapter(this.title, this.idContainer);
+        localStore().getCurrentDoc().makeChapter(this.title, this.idContainer)
       "
     >
       <ion-icon slot="start" :icon="addCircle"></ion-icon>
@@ -37,9 +33,7 @@ import {
 } from "@ionic/vue";
 
 import { ellipsisVertical, addCircle, saveOutline } from "ionicons/icons";
-import { localStore } from "@/stores/PwaBasicStore";
-
-import { update } from "firebase/database";
+import { localStore, temporaryCloudStore } from "@/stores/PwaBasicStore";
 
 export default {
   name: "PwaDocument",
@@ -54,16 +48,6 @@ export default {
   },
 
   methods: {
-    save() {
-      localStore().appendChapter();
-      const matrix = localStore().getChapterMatrix();
-      console.log("accessing DataBase...");
-      if (matrix != []) {
-        update(localStore().getCurrentDBRef(), { content: matrix });
-        localStore().clearChapterMatrixOnceSaved();
-      }
-    },
-
     checkDocIsActive() {
       return localStore().isDocActive();
     },
@@ -71,7 +55,7 @@ export default {
 
   setup() {
     const idContainer = "#chapter-container";
-    const title = "currentDoc da sistemare"; //localStore().getCurrentDoc().getDocTitle();
+    const title = localStore().getTitle();
 
     return {
       ellipsisVertical,

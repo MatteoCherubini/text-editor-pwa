@@ -49,6 +49,7 @@ router.isReady().then(() => {
     const ui = new firebaseui.auth.AuthUI(getAuth(firebaseApp));
     if (user) {
       console.log("user already logged");
+      router.replace("/workspace");
       app.mount('#app');
       console.log("App mounted correctly");
     }

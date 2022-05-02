@@ -7,7 +7,7 @@
         maxlength="20"
         placeholder="Enter Title"
         value="chapTitle;"
-        @keyup.enter="saveChapTitle(chapTitle)"
+        @keyup.enter="saveChapTitle(chapTitle, chapRef)"
         >{{ title }}
       </ion-input>
     </ion-item>
@@ -19,7 +19,7 @@
         placeholder="..."
         autocapitalize="sentences"
         value="chapContent;"
-        @keyup.enter="saveChapCont(chapContent)"
+        @keyup.enter="saveChapCont(chapContent, chapRef)"
       >
       </ion-textarea>
     </ion-item>
@@ -29,7 +29,9 @@
 <script lang="ts">
 import { IonTextarea, IonItem, IonInput } from "@ionic/vue";
 
-import { localStore } from "@/stores/PwaBasicStore";
+import { localStore, temporaryCloudStore } from "@/stores/PwaBasicStore";
+
+import { ThenableReference, update } from "firebase/database";
 import { menuCloudDocStrategy } from "./textEditorLibrary";
 
 export default {
@@ -45,29 +47,29 @@ export default {
   },
 
   methods: {
-    saveChapTitle: function (text: string) {
-      localStore().currentChapterText[0] = text;
+    saveChapTitle: function (text: string, chapRef: ThenableReference) {
+      update(chapRef, { title: text });
     },
 
-    saveChapCont: function (text: string) {
-      localStore().currentChapterText[1] = text;
+    saveChapCont: function (text: string, chapRef: ThenableReference) {
+      update(chapRef, { content: text });
     },
   },
 
   setup() {
-    const matrix = localStore().getChapterMatrix();
     var chapTitle;
     var chapContent;
 
     if (localStore().getCurrentDoc() instanceof menuCloudDocStrategy) {
-      chapTitle = matrix[0];
-      chapContent = matrix[1];
+      chapTitle = temporaryCloudStore().getChapCloudTitle();
+      chapContent = temporaryCloudStore().getChapCloudContent();
     } else {
       chapTitle = "";
       chapContent = "";
     }
 
-    return { chapTitle, chapContent };
+    const chapRef = temporaryCloudStore().getChapCloudRef();
+    return { chapTitle, chapContent, chapRef };
   },
 };
 </script>
