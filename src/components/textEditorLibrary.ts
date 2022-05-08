@@ -3,7 +3,6 @@ import { createApp } from 'vue';
 //import { Filesystem, Directory, Encoding, } from '@capacitor/filesystem';
 import { ref, get, DatabaseReference, push, getDatabase, } from 'firebase/database';
 import { localStore, temporaryCloudStore } from '@/stores/PwaBasicStore';
-//import { createPinia } from 'pinia';
 
 import PwaChapterArea from '@/components/TextEditorComponent.vue';
 import PwaDocument from "@/components/CurrentDocument.vue";
@@ -91,10 +90,10 @@ abstract class Document extends TextEditorSubject {
       localStore().assignDocActive(false);
       const div = document.createElement("div");
       div.setAttribute("class", "PWAdoc");
-      div.setAttribute("id", "main-content");
-      document.querySelector('#main-content')?.replaceWith(div);
+      div.setAttribute("id", "doc-main-content");
+      document.querySelector('#doc-main-content')?.replaceWith(div);
       localStore().assignDocActive(true);
-      createApp(PwaDocument).mount("#main-content");//.use(createPinia())
+      createApp(PwaDocument).mount("#doc-main-content");
     }
 
     else {
@@ -163,36 +162,7 @@ class Chapter extends TextEditorComponent {
     container?.appendChild(mountNode);
 
     console.log("added a chapter");
-    createApp(PwaChapterArea).mount("#mount-node");//.use(createPinia())/////////////////////////////
+    createApp(PwaChapterArea).mount("#mount-node");
     mountNode.removeAttribute("id");
   }
 }
-
-
-//start JavaScript functions
-
-/*function makeHTML(title: string, matrix: string[][]) {
-  // generates an HTML file with page contents and saves it into the database
-
-  let htmlContent = "";
-  matrix.forEach(chap => htmlContent
-    = htmlContent + "<h2>" + chap[0]
-    + "</h2> <p style='padding-left:10%;'>" + chap[1] + "</p> <br> <br>");
-
-  htmlContent =
-    "<html> <h1 style='text-align:center;'>"
-    + title + "</h1> " + htmlContent + "</html>";
-
-  //push(this.firebaseRef, { title: title, content: htmlContent });
-
-
-  
-      await Filesystem.writeFile({
-        path: "" + title + ".html",
-        data: htmlContent,
-        directory: Directory.Documents,//for android
-        encoding: Encoding.UTF8,
-      });
-  
-}*/
-

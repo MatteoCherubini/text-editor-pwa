@@ -15,7 +15,7 @@ const firebaseConfig = {
   storageBucket: "progettotesi-a0499.appspot.com",
   messagingSenderId: "323462122062",
   appId: "1:323462122062:web:73b882b3c71fbfb674111f",
-  measurementId: "G-PVMJ9W3PWG"
+  measurementId: "G-PVMJ9W3PWG",
 };
 
 // Initialize Firebase

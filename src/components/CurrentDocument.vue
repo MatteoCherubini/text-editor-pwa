@@ -2,6 +2,13 @@
   <ion-page v-if="checkDocIsActive()">
     <ion-header>
       <ion-toolbar>
+        <ion-button
+          slot="start"
+          id="PWAmenuButton"
+          @click="toggleMenu()"
+        >
+          <ion-icon slot="icon-only" :icon="menu"></ion-icon>
+        </ion-button>
         <ion-title id="PWAdocTitle" slot="start"> {{ title }} </ion-title>
       </ion-toolbar>
     </ion-header>
@@ -32,8 +39,10 @@ import {
   IonIcon,
 } from "@ionic/vue";
 
-import { ellipsisVertical, addCircle, saveOutline } from "ionicons/icons";
-import { localStore, temporaryCloudStore } from "@/stores/PwaBasicStore";
+import { ellipsisVertical, addCircle, saveOutline, menu } from "ionicons/icons";
+import { localStore } from "@/stores/PwaBasicStore";
+
+import { SIZE_TO_MEDIA } from "@ionic/core/dist/collection/utils/media";
 
 export default {
   name: "PwaDocument",
@@ -51,6 +60,17 @@ export default {
     checkDocIsActive() {
       return localStore().isDocActive();
     },
+
+    toggleMenu() {
+      const splitPane = document.querySelector("ion-split-pane")!;
+      if (
+        window.matchMedia(
+          SIZE_TO_MEDIA[splitPane.when.toString()] || splitPane.when
+        ).matches
+      ) {
+        splitPane.classList.toggle("split-pane-visible");
+      }
+    },
   },
 
   setup() {
@@ -61,6 +81,7 @@ export default {
       ellipsisVertical,
       addCircle,
       saveOutline,
+      menu,
       localStore,
       idContainer,
       title,
@@ -68,3 +89,11 @@ export default {
   },
 };
 </script>
+
+<style>
+  @media only screen and (max-width: 991px) {
+    #PWAmenuButton {
+      display:none;
+    }
+  }
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="flag">
     <ion-item>
       <ion-input
         v-model="chapTitle"
@@ -7,9 +7,10 @@
         maxlength="20"
         placeholder="Enter Title"
         value="chapTitle;"
-        @keyup.enter="saveChapTitle(chapTitle, chapRef)"
+        @change="saveChapTitle(chapTitle, chapRef)"
         >{{ title }}
-      </ion-input>
+      </ion-input><!--@keyup.enter=""-->
+      <ion-icon slot="end" :icon="closeOutline" @click="removeChap(chapRef); flag = false;"></ion-icon>
     </ion-item>
     <ion-item>
       <ion-textarea
@@ -19,7 +20,7 @@
         placeholder="..."
         autocapitalize="sentences"
         value="chapContent;"
-        @keyup.enter="saveChapCont(chapContent, chapRef)"
+        @change="saveChapCont(chapContent, chapRef)"
       >
       </ion-textarea>
     </ion-item>
@@ -27,11 +28,12 @@
 </template>
 
 <script lang="ts">
-import { IonTextarea, IonItem, IonInput } from "@ionic/vue";
+import { IonTextarea, IonItem, IonInput, IonIcon } from "@ionic/vue";
+import { closeOutline } from "ionicons/icons";
 
 import { localStore, temporaryCloudStore } from "@/stores/PwaBasicStore";
 
-import { ThenableReference, update } from "firebase/database";
+import { remove, ThenableReference, update } from "firebase/database";
 import { menuCloudDocStrategy } from "./textEditorLibrary";
 
 export default {
@@ -44,6 +46,14 @@ export default {
     IonTextarea,
     IonItem,
     IonInput,
+    IonIcon,
+  },
+
+  data: function () {
+    return {
+      flag: true,
+    }
+    
   },
 
   methods: {
@@ -54,6 +64,10 @@ export default {
     saveChapCont: function (text: string, chapRef: ThenableReference) {
       update(chapRef, { content: text });
     },
+
+    removeChap: function (chapRef: ThenableReference) {
+      remove(chapRef);
+    }
   },
 
   setup() {
@@ -69,7 +83,7 @@ export default {
     }
 
     const chapRef = temporaryCloudStore().getChapCloudRef();
-    return { chapTitle, chapContent, chapRef };
+    return { chapTitle, chapContent, chapRef, closeOutline};
   },
 };
 </script>
